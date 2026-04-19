@@ -3,30 +3,41 @@ name: build_release
 on:
   workflow_dispatch:
   schedule:
-      - cron: '0 20 * * *'  # 北京时间 4: 00
+      - cron: '0 19 * * *'  # 北京时间 3: 00
 
 jobs:
   build_release:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
+
     steps:
-      - uses: actions/checkout@v6
+      - name: 检出仓库代码
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      - name:  配置 Node.js 运行环境
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
 
-      - uses: pnpm/action-setup@v6
+      - name: 配置 pnpm 包管理器
+        uses: pnpm/action-setup@v6
 
-      - run: pnpm install
+      - name: 安装项目依赖
+        run: pnpm install
 
-      - run: pnpm run build
+      - name: 构建项目
+        run: pnpm run build
 
-      - id: version
+      - name: 生成版本号
+        id: version
         run: |
           version=$(node -e "import('@gkd-kit/tools').then((m) => m.stdoutGkdVersion());")
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
-      - name: Git commit
+      - name: 提交构建产物
         id: commit
         run: |
           git config --local user.email github-actions[bot]@users.noreply.github.com
@@ -36,7 +47,7 @@ jobs:
           git commit -a -m "chore: v${{steps.version.outputs.version}}"
         continue-on-error: true
 
-      - name: Git push
+      - name: 推送代码到远程仓库
         if: ${{ steps.commit.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
@@ -44,7 +55,7 @@ jobs:
           branch: ${{ github.ref }}
           tags: true
 
-      - name: Create Release
+      - name: 创建 GitHub 发行版
         if: ${{ steps.commit.outcome == 'success' }}
         uses: softprops/action-gh-release@v3
         with:

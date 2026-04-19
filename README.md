@@ -20,7 +20,7 @@ https://raw.githubusercontent.com/boonlove/GKD_Subscription/main/dist/gkd.json5
 
 - 查看 [适配 APP 列表](./dist/README.md)
 - 使用 [GKD订阅模板](https://github.com/gkd-kit/subscription-template) 快速构建自己的订阅
-- 已适配规则需要等待发布更新才会生效，北京时间`4:00`会自动发布更新
+- 已适配规则需要等待发布更新才会生效，北京时间`3:00`会自动发布更新
 
 ## 🔖其他
 
